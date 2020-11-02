@@ -14,7 +14,7 @@ switch_update_interrupt_sense()
   P1IES &= (p1val | ~SWITCHES);/* if switch down, sense up */
   P2IES |= (p2val & SWITCHES2);
   P2IES &= (p2val | ~SWITCHES2);
-  return p1val;
+  return p2val;
 }
 
 
@@ -37,8 +37,14 @@ switch_init()/* setup switch */
 void
 switch_interrupt_handler()
 {
-  char p1val = switch_update_interrupt_sense();
-  switch_state_down = (p1val & SW1) ? 0 : 1; /* 0 when SW1 is up */
-  switch_state_changed = 1;
-  led_update();
+  char p2val = switch_update_interrupt_sense();
+  //Will change from a specific button in P2
+  if((p2val & S1) == 0)
+    state_p2_button = 0;
+  else if((p2val & S2) == 0)
+    state_p2_button = 1;
+  else if((p2val & S3) == 0)
+    state_p2_button = 2;
+  else if((p2val & S4) == 0)
+    state_p2_button = 3;
 }
